@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="description" content="Free premium QR generator, customizer, scanner, bulk tools, analytics and local history." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%234f46e5'/%3E%3Cpath d='M15 15h14v14H15zm20 0h14v14H35zM15 35h14v14H15zm20 20V35h6v6h8v-6h6v14h-6v6z' fill='white'/%3E%3C/svg%3E" />
+  <title>QRify — Premium QR Studio</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/qr-code-styling@1.9.2/lib/qr-code-styling.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="header glass">
+      <div class="brand">
+        <div class="brand-logo-wrap">
+          <svg class="brand-logo-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="QRify Logo">
+            <rect width="48" height="48" rx="14" fill="url(#logo-grad)"/>
+            <line x1="8" y1="24" x2="40" y2="24" stroke="white" stroke-width="2.5" stroke-linecap="round" class="logo-scan-line" />
+            <rect x="11" y="11" width="11" height="11" rx="3" stroke="white" stroke-width="2.5"/>
+            <rect x="14.5" y="14.5" width="4" height="4" rx="1" fill="white"/>
+            <rect x="26" y="11" width="11" height="11" rx="3" stroke="white" stroke-width="2.5"/>
+            <rect x="29.5" y="14.5" width="4" height="4" rx="1" fill="white"/>
+            <rect x="11" y="26" width="11" height="11" rx="3" stroke="white" stroke-width="2.5"/>
+            <rect x="14.5" y="29.5" width="4" height="4" rx="1" fill="white"/>
+            <circle cx="31.5" cy="31.5" r="3.5" fill="white" class="logo-pulse-dot"/>
+            <path d="M26 36.5H37" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="logo-grad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#4F46E5"/>
+                <stop offset="1" stop-color="#06B6D4"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-text"><strong>QRify</strong><span>Free • Local-first • Premium QR toolkit</span></div>
+      </div>
+      <nav class="nav" aria-label="Primary Navigation">
+        <button class="nav-btn active" data-view="generator" aria-label="Navigate to QR Generator">Generator</button>
+        <button class="nav-btn" data-view="scanner" aria-label="Navigate to QR Scanner">Scanner</button>
+        <button class="nav-btn" data-view="bulk" aria-label="Navigate to Bulk Tools">Bulk Tools</button>
+        <button class="nav-btn" data-view="analytics" aria-label="Navigate to Analytics">Analytics</button>
+        <button class="nav-btn" data-view="history" aria-label="Navigate to History">History</button>
+      </nav>
+      <div class="toolbar">
+        <button class="icon-btn ripple" id="themeBtn" title="Toggle theme" aria-label="Toggle dark/light theme">☀️</button>
+        <button class="icon-btn ripple" id="installBtn" title="Install app" aria-label="Install app" hidden>⇩</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="view active" id="view-generator">
+        <div class="hero glass">
+          <div class="chip">100% free • no account • local-first</div>
+          <h1>Design QR codes that look as good as they scan.</h1>
+          <p>Build branded QR codes for links, profiles, Wi‑Fi, contacts, payments, events, geo locations and more — with live styling, logo support, export tools, scanner workflows and local history.</p>
+        </div>
+        <div class="grid generator">
+          <div class="card glass">
+            <div class="section-title">
+              <div><h2>1. Choose a QR type</h2><p>Every field updates the code instantly.</p></div>
+              <span class="chip" id="charCount">0 chars</span>
+            </div>
+            <div class="category-grid" id="categoryGrid"></div>
+            <div id="dynamicForm"></div>
+            <div class="controls-section">
+              <div class="section-title">
+                <div><h2>2. Appearance</h2><p>Premium styling with scan-safe defaults.</p></div>
+                <span class="chip" id="contrastWarningChip" style="display:none;background:rgba(239,68,68,0.15);color:#ef4444;">⚠️ Low Contrast</span>
+              </div>
+              
+              <div class="preset-section" style="margin-bottom:14px">
+                <label>Color Presets</label>
+                <div class="preset-grid" id="colorPresets" style="display:flex;gap:8px;margin-top:6px">
+                  <button class="preset-btn active" data-fg="#111827" data-bg="#ffffff" data-eye="#4f46e5" style="background:#111827;border:2px solid #4f46e5;width:28px;height:28px;border-radius:50%" title="Classic Indigo" aria-label="Select Classic Indigo color preset"></button>
+                  <button class="preset-btn" data-fg="#0f172a" data-bg="#f8fafc" data-eye="#06b6d4" style="background:#0f172a;border:2px solid #06b6d4;width:28px;height:28px;border-radius:50%" title="Ocean Cyan" aria-label="Select Ocean Cyan color preset"></button>
+                  <button class="preset-btn" data-fg="#064e3b" data-bg="#ecfdf5" data-eye="#10b981" style="background:#064e3b;border:2px solid #10b981;width:28px;height:28px;border-radius:50%" title="Emerald Green" aria-label="Select Emerald Green color preset"></button>
+                  <button class="preset-btn" data-fg="#581c87" data-bg="#faf5ff" data-eye="#a855f7" style="background:#581c87;border:2px solid #a855f7;width:28px;height:28px;border-radius:50%" title="Royal Purple" aria-label="Select Royal Purple color preset"></button>
+                  <button class="preset-btn" data-fg="#7c2d12" data-bg="#fff7ed" data-eye="#f97316" style="background:#7c2d12;border:2px solid #f97316;width:28px;height:28px;border-radius:50%" title="Sunset Amber" aria-label="Select Sunset Amber color preset"></button>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="field"><label for="fgColor">Foreground</label><input id="fgColor" type="color" value="#111827"></div>
+                <div class="field"><label for="bgColor">Background</label><input id="bgColor" type="color" value="#ffffff"></div>
+                <div class="field"><label>Gradient</label><div class="seg" id="gradientSeg"><button class="active" data-value="none" aria-label="Solid color gradient">Solid</button><button data-value="linear" aria-label="Linear gradient">Linear</button><button data-value="radial" aria-label="Radial gradient">Radial</button></div></div>
+                <div class="field"><label for="eyeColor">Eye color</label><input id="eyeColor" type="color" value="#4f46e5"></div>
+                <div class="field"><label for="dotType">Dot / pixel shape</label><select id="dotType"><option value="square">Squares</option><option value="dots">Dots</option><option value="rounded">Rounded</option><option value="classy">Classy</option><option value="classy-rounded">Classy Rounded</option><option value="extra-rounded">Extra Rounded</option></select></div>
+                <div class="field"><label for="eyeType">Eye shape</label><select id="eyeType"><option value="square">Square</option><option value="dot">Dot</option><option value="extra-rounded">Extra Rounded</option></select></div>
+                <div class="field"><label for="ecLevel">Error correction</label><select id="ecLevel"><option value="L">L • 7%</option><option value="M" selected>M • 15%</option><option value="Q">Q • 25%</option><option value="H">H • 30%</option></select></div>
+              </div>
+              <div class="row" style="margin-top:12px">
+                <label class="logo-drop" style="flex:1;min-width:240px">
+                  <span class="drop-label" id="logoDropLabel"><strong>Center logo</strong><span>PNG / JPG / WebP</span></span>
+                  <input id="logoFile" type="file" accept="image/png,image/jpeg,image/webp" aria-label="Upload center logo">
+                </label>
+                <button class="btn danger" id="removeLogoBtn" style="display:none;" aria-label="Remove uploaded logo">Remove Logo</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card glass preview-card">
+            <div class="section-title"><div><h2>Live preview</h2><p>Optimized for clean export and brand-safe contrast.</p></div><span class="chip" id="statusChip">Awaiting input</span></div>
+            <div class="preview-wrap" id="previewWrap"><div id="qr-preview"></div></div>
+            <div class="preview-actions">
+              <button class="btn primary ripple" data-export="png" aria-label="Export PNG format">PNG</button>
+              <button class="btn ripple" data-export="jpeg" aria-label="Export JPG format">JPG</button>
+              <button class="btn ripple" data-export="svg" aria-label="Export SVG format">SVG</button>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <button class="btn secondary ripple" id="saveQrBtn" aria-label="Save QR code to local history">Save to History</button>
+              <button class="btn ripple" id="copyQrDataBtn" aria-label="Copy QR code payload content">Copy Data</button>
+            </div>
+            <div class="footer-tip">Tip: higher error correction is recommended when a center logo is used. The final QR should always be physically test-scanned.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-scanner">
+        <div class="hero glass"><div class="chip">Live camera + image decoding</div><h1>Scan fast. Act immediately.</h1><p>Use the camera, swap front/back lenses, toggle torch where supported, or decode a QR from an image file.</p></div>
+        <div class="grid scanner">
+          <div class="card glass">
+            <div class="section-title"><div><h2>Camera scanner</h2><p id="cameraStatus">Camera is idle.</p></div><span class="chip" id="scannerDeviceChip">Mobile-ready</span></div>
+            <div class="scanner-box">
+              <div id="reader"></div><div class="scanner-corners"></div><div class="scan-laser"></div>
+            </div>
+            <div class="scanner-controls">
+              <button class="btn primary ripple" id="startScanBtn" aria-label="Start scanning camera">Start camera</button>
+              <button class="btn ripple" id="switchCameraBtn" aria-label="Switch camera device">Switch camera</button>
+              <button class="btn ripple" id="torchBtn" aria-label="Toggle camera torch">Torch</button>
+            </div>
+            <div class="file-drop" style="margin-top:12px"><label class="drop-label"><strong>Scan an image file</strong><span>Drop a QR image here or choose a file</span><input id="scanImageFile" type="file" accept="image/*" aria-label="Upload QR image file for scanning"></label></div>
+          </div>
+          <div class="card glass result-box">
+            <div class="section-title"><div><h2>Latest result</h2><p>Local event + action history.</p></div><span class="chip" id="scanMeta">0 scans</span></div>
+            <div id="scanResultEmpty" class="empty">No scan yet. Start the camera or upload an image.</div>
+            <div id="scanResultPanel" hidden>
+              <div class="result-pre" id="scanResultText"></div>
+              <div class="row" style="margin-top:12px">
+                <button class="btn primary" id="openResultBtn" aria-label="Execute context action">Open / Action</button>
+                <button class="btn" id="copyResultBtn" aria-label="Copy scan result text">Copy</button>
+                <button class="btn" id="saveContactBtn" aria-label="Save scanned vCard contact" hidden>Save Contact</button>
+              </div>
+            </div>
+            <div class="controls-section">
+              <div class="section-title"><div><h3>Session device summary</h3><p>Stored locally on this device.</p></div></div>
+              <div class="timeline" id="sessionTimeline"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-bulk">
+        <div class="hero glass"><div class="chip">CSV + Excel • ZIP export</div><h1>Turn a dataset into a QR library.</h1><p>Upload CSV/XLS/XLSX, map each row to a QR payload, preview the records, then generate a ZIP of PNG/SVG files entirely in the browser.</p></div>
+        <div class="card glass">
+          <div class="section-title"><div><h2>Bulk source</h2><p>Browser-side parsing; max file size 5MB / 1000 rows.</p></div><span class="chip" id="bulkCount">0 rows</span></div>
+          <div class="row"><label class="file-drop" style="flex:1"><span class="drop-label"><strong>Choose CSV or Excel</strong><span>First row is treated as headers.</span></span><input id="bulkFile" type="file" accept=".csv,.xls,.xlsx,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" aria-label="Upload CSV or Excel file"></label><div style="flex:1"><div class="field"><label for="bulkColumn">Payload column</label><select id="bulkColumn"></select></div><div class="field" style="margin-top:10px"><label>Export format</label><div class="seg" id="bulkFormatSeg"><button class="active" data-value="png" aria-label="Export bulk as PNG">PNG</button><button data-value="svg" aria-label="Export bulk as SVG">SVG</button></div></div></div></div>
+          <div class="bulk-preview table-wrap" id="bulkPreview"></div>
+          <div style="margin-top:14px"><div class="progress"><span id="bulkProgressBar"></span></div><div class="row" style="margin-top:10px"><span class="small muted" id="bulkProgressText">Ready.</span><button class="btn primary ripple" id="generateBulkBtn" aria-label="Generate bulk ZIP archive">Generate ZIP</button></div></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-analytics">
+        <div class="hero glass"><div class="chip">Privacy-first analytics</div><h1>Your QR activity, on-device.</h1><p>Analytics are derived from your local history. No backend or account is required.</p></div>
+        <div class="stat-grid">
+          <div class="stat glass"><div class="n" id="statGenerated">0</div><div class="l">Generated</div></div>
+          <div class="stat glass"><div class="n" id="statScanned">0</div><div class="l">Scanned</div></div>
+          <div class="stat glass"><div class="n" id="statSessions">0</div><div class="l">Active Days</div></div>
+          <div class="stat glass"><div class="n" id="statFormats">0</div><div class="l">Export actions</div></div>
+        </div>
+        <div style="margin-top:18px">
+          <div class="card glass"><div class="section-title"><div><h3>Top QR categories</h3><p>Generated codes grouped by type.</p></div></div><div id="categoryMix" class="timeline"></div></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-history">
+        <div class="hero glass"><div class="chip">Persistent local history</div><h1>Everything you make, one timeline.</h1><p>Generated QRs and successful scans stay in your browser using localStorage. Clear them anytime.</p></div>
+        <div class="card glass"><div class="section-title"><div><h2>Activity history</h2><p id="historySub">0 events</p></div><button class="btn danger" id="clearHistoryBtn" aria-label="Clear all local history">Clear history</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Time</th><th>Type</th><th>Category</th><th>Value / Result</th><th>Action</th></tr></thead><tbody id="historyBody"></tbody></table></div></div>
+      </section>
+    </main>
+
+    <footer class="footer-dev-clean">
+      <div class="dev-glass-pill" title="Crafted by Omar Mohammad Chowdhury">
+        <span class="dev-dot"></span>
+        <span class="dev-label">Crafted by</span>
+        <a href="https://www.facebook.com/OmarMohammadChowdhury" target="_blank" rel="noopener noreferrer" class="dev-author">Omar Mohammad Chowdhury</a>
+        <span class="dev-sep">•</span>
+        <span class="dev-loc">Chittagong, Bangladesh</span>
+      </div>
+    </footer>
+  </div>
+
+  <div class="modal" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-card glass">
+      <div class="section-title">
+        <div><h2 id="modalTitle">Scan result</h2><p>Choose an action.</p></div>
+        <button class="icon-btn" id="closeModal" aria-label="Close modal window">✕</button>
+      </div>
+      <div class="result-pre" id="modalResultText"></div>
+      <div class="row modal-actions" style="margin-top:12px">
+        <button class="btn primary" id="modalOpenBtn" aria-label="Execute context action">Open / Action</button>
+        <button class="btn" id="modalCopyBtn" aria-label="Copy scanned result modal text">Copy</button>
+        <button class="btn" id="modalVcardBtn" aria-label="Save contact from modal result" hidden>Save Contact</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
