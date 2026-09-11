@@ -43,3 +43,6 @@
 * **User Privacy & Offline Capability / সিকিউরিটি ও অফলাইন সাপোর্ট:**
   * Built with top-tier security standards that ensure your scanned data stays private, with full core functionality available even without an internet connection.
   * ব্যবহারকারীর তথ্যের সর্বোচ্চ সুরক্ষা নিশ্চিত করে এবং ইন্টারনেটের উপস্থিতি ছাড়াও অফলাইনে মূল ফিচারগুলো ব্যবহারের সুবিধা দেয়।
+
+
+### Web Site Link; https://qrifybd.netlify.app/
